@@ -29,10 +29,10 @@ public class MyOrderSourceFunction implements SourceFunction<Order> {
         Random random = new Random();
         while (running && time < timeEnd && size < 999999999) {
             int i = random.nextInt(skuIdList.size());
-            Long timestamp = time + 1000 * 60 * 1;//10min
+            Long timestamp = time + 1000 * 60 * 10;//10min
             Order order = new Order(skuIdList.get(i), timestamp, 1L);
             sourceContext.collect(order);
-            TimeUnit.MILLISECONDS.sleep(100);
+            TimeUnit.MILLISECONDS.sleep(200);
             time = timestamp;
             size++;
         }

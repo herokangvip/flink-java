@@ -9,6 +9,9 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.triggers.ContinuousEventTimeTrigger;
+import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 
 import java.util.List;
 
@@ -30,7 +33,9 @@ public class DaysTopn {
                 .assignTimestampsAndWatermarks(new OrderAssinerWaterMarks(Time.seconds(5)))
                 .windowAll(TumblingEventTimeWindows.of(Time.days(1), Time.hours(16)))
                 .allowedLateness(Time.minutes(1))
-                .trigger(new OrderTrigger(30))
+                .trigger(new OrderTrigger(30))//自己实现按次数触发并清理窗口数据，每n个数据触发一次数据只有n个
+                //.trigger(CountTrigger.of(3))//Flink自带按次数触发不清理窗口数据，每n个数据触发一次，数据为之前窗口所有的数据+n个
+                //.trigger(ContinuousEventTimeTrigger.of(Time.seconds(1)))//自带实现按时间触发计算,只fire数据不清理窗口数据
                 .process(new OrderProcessFunction(topSize));
 
         dataStream.print();

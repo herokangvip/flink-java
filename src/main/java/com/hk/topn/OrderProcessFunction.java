@@ -27,7 +27,9 @@ public class OrderProcessFunction extends ProcessAllWindowFunction<Order, List<O
     @Override
     public void process(Context context, Iterable<Order> iterable, Collector<List<Order>> collector) throws Exception {
         Iterator<Order> it = iterable.iterator();
+        int aa = 0;
         while (it.hasNext()) {
+            aa++;
             Order order = it.next();
             Long skuId = order.getSkuId();
             if (allMap.contains(skuId)) {
@@ -39,6 +41,7 @@ public class OrderProcessFunction extends ProcessAllWindowFunction<Order, List<O
             }
         }
 
+        System.out.println("==每次处理:"+aa);
         ArrayList<Order> list = new ArrayList<>();
         Iterator<Order> iterator = allMap.values().iterator();
         while (iterator.hasNext()) {
